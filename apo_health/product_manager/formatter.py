@@ -266,10 +266,7 @@ class ProductParser:
         file.close()
 
     def get_shipping_fee(self, response):
-        shippingFee = float(
-            (int((5.49 * self.EURO_to_US_DOLLAR_EXCHANGE_RATE) * 100)) / 100.0
-        )  # 5.49 euro is DHL has tracking shipping price (~2kg)
-        return shippingFee
+        return 0
 
     def get_product_id_from_response(self, response):
         return response.xpath("//div[@data-pf-type='ProductBox']/@data-product-id").get()
