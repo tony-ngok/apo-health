@@ -40,7 +40,7 @@ setup(
     install_requires=requirements,
     entry_points={
         "scrapy": [
-            "settings = apo-health.settings",
+            "settings = apo_health.settings",
         ],
     },
 )

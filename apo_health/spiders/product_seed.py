@@ -4,8 +4,8 @@ import re
 import os
 import scrapy
 import scrapy.selector
-from apotal.items import ProductItem
-from apotal.product_manager import formatter
+from apo_health.items import ProductItem
+from apo_health.product_manager import formatter
 
 
 from urllib.parse import urlparse, urlunparse
@@ -13,12 +13,12 @@ from urllib.parse import urlparse, urlunparse
 
 class ProductSeedSpider(scrapy.Spider):
     name = "product-seed"
-    allowed_domains = ["apotal.com"]
-    start_urls = ["https://front.apotal.com/product/2866049042"]
+    allowed_domains = ["apo_health.com"]
+    start_urls = ["https://front.apo_health.com/product/2866049042"]
 
     custom_settings = {
         "ITEM_PIPELINES": {
-            "apotal.pipelines.SeedProductPipeline": 400,
+            "apo_health.pipelines.SeedProductPipeline": 400,
         }
     }
 
@@ -51,7 +51,7 @@ class ProductSeedSpider(scrapy.Spider):
             "wmp-auk": "f5d78ebd-7593-44d7-a83e-8256-ebec6ac34a3a",
             "wmp_pcstamp": "1716575146576588384",
             "_gid": "GA1.2.136416936.1717424568",
-            "rp": "http%3A%2F%2Ffront.apotal.com%2Fcategory%2Fdivision%2F2100374",
+            "rp": "http%3A%2F%2Ffront.apo_health.com%2Fcategory%2Fdivision%2F2100374",
             "__utmc": "122159757",
             "__utmz": "122159757.1717448436.11.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)",
             "__utma": "122159757.919114022.1716575151.1717507113.1717510302.13",
@@ -90,9 +90,9 @@ class ProductSeedSpider(scrapy.Spider):
         product_id = split_path.pop()
         url_type = split_path.pop()
         if url_type == "product":
-            base_url = "https://front.apotal.com/api/review/{url_type}/v2.1/{product_id}/review/info.json?sortType=BEST&viewScoreType=TOTAL&page=1&ieFix="
+            base_url = "https://front.apo_health.com/api/review/{url_type}/v2.1/{product_id}/review/info.json?sortType=BEST&viewScoreType=TOTAL&page=1&ieFix="
         else:
-            base_url = f"https://front.apotal.com/api/review/{url_type}/{product_id}/review/info.json?sortType=BEST&viewScoreType=TOTAL&page=1&ieFix="
+            base_url = f"https://front.apo_health.com/api/review/{url_type}/{product_id}/review/info.json?sortType=BEST&viewScoreType=TOTAL&page=1&ieFix="
         return f"{base_url}{round(datetime.now().timestamp()*100)}"
 
     def crawl_product(self, url, headers):
