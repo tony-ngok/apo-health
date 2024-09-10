@@ -303,7 +303,7 @@ class ProductParser:
             {
                 "date": datetime.now().replace(microsecond=0).isoformat(),
                 "url": response.url,
-                "source": response.url.split("//").pop(1).split("/").pop(0).replace(".", "_"),
+                "source": "ApoHealth",
                 "product_id": product_data.get("mpn")
                 or self.get_product_id_from_response(response),
                 "sku": product_data["sku"],

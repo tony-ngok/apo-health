@@ -30,7 +30,7 @@ class TestProduct(unittest.TestCase):
             "existence": False,
             "date": "2024-08-24T15:09:53",
             "url": "https://www.apo-health.com/products/ketoconazol-klinge-20-mgg-shampoo-60-ml-sha",
-            "source": "www_apo-health_com",
+            "source": "ApoHealth",
             "product_id": "4150173900860",
             "sku": "J-17390086",
             "upc": None,
@@ -61,7 +61,7 @@ class TestProduct(unittest.TestCase):
         self.assertEqual(len(result), 1)
         product = result[0]
         target_product = {
-            "source": "apo_health",
+            "source": "ApoHealth",
             "existence": True,
             "date": "2024-08-24T15:01:32",
             "url": "https://www.apo-health.com/collections/all/products/hydrocortison-ratiopharm-05-creme-15-g-creme",
@@ -84,7 +84,7 @@ class TestProduct(unittest.TestCase):
             "description_en": None,
             "shipping_days_min": 6,
             "shipping_days_max": 9,
-            "shipping_fee": 6.14,
+            "shipping_fee": 0,
             "videos": None,
             "categories": "Alle Artikel",
             "specifications": [
@@ -141,7 +141,7 @@ class TestProduct(unittest.TestCase):
             "existence": False,
             "date": "2024-08-24T15:33:55",
             "url": "https://www.apo-health.com/collections/all/products/plantur-39-coffein-shampoo-color-250-ml-sha",
-            "source": "apo_health",
+            "source": "ApoHealth",
             "product_id": "04008666700902",
             "sku": "J-05567533",
             "upc": None,
@@ -162,7 +162,7 @@ class TestProduct(unittest.TestCase):
             "description_en": None,
             "shipping_days_min": 6,
             "shipping_days_max": 9,
-            "shipping_fee": 6.14,
+            "shipping_fee": 0,
             "videos": None,
             "categories": "Alle Artikel",
             "specifications": [
@@ -218,7 +218,7 @@ class TestProduct(unittest.TestCase):
             "existence": True,
             "date": "2024-09-03T15:11:00",
             "url": "https://www.apo-health.com/collections/all/products/vitamin-b-complete-hevert-all-in-one-60-st-kapseln-hevert-testen-apoteams.html",
-            "source": "www_apo-health_com",
+            "source": "ApoHealth",
             "product_id": "8715891310859",
             "sku": "J-19214749",
             "upc": None,
@@ -238,7 +238,7 @@ class TestProduct(unittest.TestCase):
             "description_en": None,
             "shipping_days_min": 6,
             "shipping_days_max": 9,
-            "shipping_fee": 6.14,
+            "shipping_fee": 0,
             "videos": None,
             "categories": "",
             "specifications": None,

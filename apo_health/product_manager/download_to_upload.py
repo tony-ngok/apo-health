@@ -15,7 +15,7 @@ from resources.filters import product_filer, doc_filer
 def main():
     product_ids = fetch_source_ids(["ApoHealth"])
 
-    price_rules = {"roi": 0.3, "ad_cost": 5, "transfer_cost": 0}
+    price_rules = {"roi": 0.3, "ad_cost": 3, "transfer_cost": 0}
 
     price_calculator = PriceCalculator(price_rules)
 
@@ -47,8 +47,6 @@ def main():
                 if product["existence"] is None:
                     product["existence"] = True
                 product["sku"] = "X21_" + product["product_id"]
-
-                product["price"] = product["price"] + product["shipping_fee"]
 
                 standard_product = StandardProduct(**product)
                 upload_product = to_upload(standard_product.model_dump(), price_calculator)
