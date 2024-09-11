@@ -6,7 +6,7 @@
 
 # useful for handling different item types with a single interface
 
-from resources.pipelines import (
+from em_product.resources.pipelines import (
     ESCategoryPipeline,
     ESProductUrlPipeline,
     ESProductPipeline,
