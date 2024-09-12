@@ -194,8 +194,6 @@ class ProductParser:
                         list_value.append(splitted[i].strip())
 
                     spec.append({"name": splitted[0].strip(), "value": ",".join(list_value)})
-        else:
-            self.file_write_exception_log(url, "Can't parse specification")
 
         return spec
 
@@ -260,11 +258,6 @@ class ProductParser:
 
         return ship_days_list
 
-    def file_write_exception_log(self, url, message):
-        file = open("Exception_Log.txt", "a", encoding="utf-8")
-        file.write(url + " : " + message + "\n")
-        file.close()
-
     def get_shipping_fee(self, response):
         return 0
 
@@ -292,7 +285,6 @@ class ProductParser:
                 product_data = product_data_temp
 
         if product_data is None:
-            self.file_write_exception_log(response.url, "Error can't find product_data")
             print("Error can't find product_data, will quit parse")
             return
 
