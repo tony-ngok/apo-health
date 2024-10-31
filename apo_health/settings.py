@@ -58,10 +58,10 @@ COOKIES_DEBUG = True
 #    "apo_health.middlewares.apo_healthDownloaderMiddleware": 543,
 # }
 
-DOWNLOAD_HANDLERS = {
-    "http": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
-    "https": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
-}
+# DOWNLOAD_HANDLERS = {
+#     "http": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
+#     "https": "scrapy_playwright.handler.ScrapyPlaywrightDownloadHandler",
+# }
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
 # EXTENSIONS = {
@@ -100,22 +100,22 @@ REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
 
-# LOG_FILE = "log/apo_health.log"
+LOG_FILE = "apo_health.log"
 LOG_LEVEL = "ERROR"
 
-DOWNLOADER_CLIENT_TLS_CIPHERS = settings.DOWNLOADER_CLIENT_TLS_CIPHERS
-ELASTICSEARCH_SERVERS = settings.ELASTICSEARCH_SERVERS
-ELASTICSEARCH_USERNAME = settings.ELASTICSEARCH_USERNAME
-ELASTICSEARCH_PASSWORD = settings.ELASTICSEARCH_PASSWORD
-ELASTICSEARCH_TIMEOUT = settings.ELASTICSEARCH_TIMEOUT
-ELASTICSEARCH_MAX_RETRY = settings.ELASTICSEARCH_MAX_RETRY
+# DOWNLOADER_CLIENT_TLS_CIPHERS = settings.DOWNLOADER_CLIENT_TLS_CIPHERS
+# ELASTICSEARCH_SERVERS = settings.ELASTICSEARCH_SERVERS
+# ELASTICSEARCH_USERNAME = settings.ELASTICSEARCH_USERNAME
+# ELASTICSEARCH_PASSWORD = settings.ELASTICSEARCH_PASSWORD
+# ELASTICSEARCH_TIMEOUT = settings.ELASTICSEARCH_TIMEOUT
+# ELASTICSEARCH_MAX_RETRY = settings.ELASTICSEARCH_MAX_RETRY
 
-DOWNLOADER_MIDDLEWARES = {
-    "scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware": None,
-    "scrapy_random_ua.RandomUserAgentMiddleware": 400,
-    "scrapy_webshare.middleware.WebshareMiddleware": 500,
-}
-WEBSHARE_ENABLED = True
-WEBSHARE_USER = settings.WEBSHARE_USER
-WEBSHARE_PASSWORD = settings.WEBSHARE_PASSWORD
-WEBSHARE_COUNTRY = settings.WEBSHARE_COUNTRY
+# DOWNLOADER_MIDDLEWARES = {
+#     "scrapy.contrib.downloadermiddleware.useragent.UserAgentMiddleware": None,
+#     "scrapy_random_ua.RandomUserAgentMiddleware": 400,
+#     "scrapy_webshare.middleware.WebshareMiddleware": 500,
+# }
+# WEBSHARE_ENABLED = True
+# WEBSHARE_USER = settings.WEBSHARE_USER
+# WEBSHARE_PASSWORD = settings.WEBSHARE_PASSWORD
+# WEBSHARE_COUNTRY = settings.WEBSHARE_COUNTRY
