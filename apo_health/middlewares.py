@@ -3,7 +3,10 @@
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
+import sys
+
 from scrapy import signals
+from scrapy.http import Response
 
 # useful for handling different item types with a single interface
 from itemadapter import is_item, ItemAdapter
@@ -101,3 +104,59 @@ class WemakepriceDownloaderMiddleware:
 
     def spider_opened(self, spider):
         spider.logger.info("Spider opened: %s" % spider.name)
+
+
+class CategorySpiderErrsMiddleware: # TODO
+    @classmethod
+    def from_crawler(cls, crawler):
+        # This method is used by Scrapy to create your spiders.
+        s = cls()
+        crawler.signals.connect(s.spider_opened, signal=signals.spider_opened)
+        crawler.signals.connect(s.spider_closed, signal=signals.spider_closed)
+        return s
+
+    def __init__(self):
+        self.err = 0
+
+    def spider_opened(self, spider):
+        spider.logger.info("Spider opened: %s" % spider.name)
+
+    def process_exception(self, request, exception, spider):
+        self.err = 1
+
+    def process_response(self, request, response: Response, spider):
+        if response.status >= 400:
+            spider.logger.error(f'Error {response.status}')
+            return
+        return response
+
+    def spider_closed(self, spider):
+        sys.exit(self.err)
+
+
+class ProductUrlSpiderErrsMiddleware: # TODO
+    @classmethod
+    def from_crawler(cls, crawler):
+        # This method is used by Scrapy to create your spiders.
+        s = cls()
+        crawler.signals.connect(s.spider_opened, signal=signals.spider_opened)
+        crawler.signals.connect(s.spider_closed, signal=signals.spider_closed)
+        return s
+
+    def __init__(self):
+        self.err = 0
+
+    def spider_opened(self, spider):
+        spider.logger.info("Spider opened: %s" % spider.name)
+
+    def process_exception(self, request, exception, spider):
+        self.err = 1
+
+    def process_response(self, request, response: Response, spider):
+        if response.status >= 400:
+            spider.logger.error(f'Error {response.status}')
+            return
+        return response
+
+    def spider_closed(self, spider):
+        sys.exit(self.err)

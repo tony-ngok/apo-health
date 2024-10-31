@@ -1,7 +1,7 @@
 import json
-import re
 from datetime import datetime
 
+import requests
 from bs4 import BeautifulSoup
 import scrapy
 from scrapy.http import HtmlResponse
@@ -41,6 +41,16 @@ class ProductSpider(scrapy.Spider):
 
         # https://open.er-api.com/v6/latest/EUR
         self.eur_rate = 1.084795
+        try:
+            exch = requests.get('https://open.er-api.com/v6/latest/EUR')
+            if exch.ok:
+                self.eur_rate = exch.json()['rates']['USD']
+            else:
+                raise Exception(f'Status {exch.status_code}')
+        except Exception as e:
+            print(f"Aktueller EUR/USD-Wechselkurs nicht erhalten ({str(e)})")
+        finally:
+            print(f"EUR/USD: {self.eur_rate}".replace(".", ","))
 
     def start_requests(self):
         for i, url in enumerate(self.start_urls):
