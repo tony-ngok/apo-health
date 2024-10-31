@@ -12,10 +12,10 @@ class TestProduct(unittest.TestCase):
 
     # check unavailable product
     def test_unavailable_product(self):
-        url = "https://www.apo-health.com/products/ketoconazol-klinge-20-mgg-shampoo-60-ml-sha"
+        url = "https://www.apo-health.com/collections/mittel-gegen-schmerzen/products/diclac-dolo-25-mg-20-st-tabletten"
         body = None
         with open(
-            "apo_health_test/pages/ketoconazol-klinge-20-mgg-shampoo-60-ml-sha.html", "rb"
+            "apo_health_test/pages/diclac-dolo-25-mg-20-st-tabletten.html", "rb"
         ) as file:
             body = file.read()
 
@@ -27,16 +27,13 @@ class TestProduct(unittest.TestCase):
         self.assertEqual(len(result), 1)
         product = result[0]
         target_product = {
+            "url": "https://www.apo-health.com/collections/mittel-gegen-schmerzen/products/diclac-dolo-25-mg-20-st-tabletten",
             "existence": False,
-            "date": "2024-08-24T15:09:53",
-            "url": "https://www.apo-health.com/products/ketoconazol-klinge-20-mgg-shampoo-60-ml-sha",
-            "source": "ApoHealth",
             "product_id": "4150173900860",
             "sku": "J-17390086",
             "upc": None,
-            "available_qty": None,
-            "returnable": False,
-            "title": "Ketoconazol Klinge 20 mg/g Shampoo, 60 ml SHA",
+            "available_qty": 0,
+            "title": "Diclac Dolo 25 mg, 20 St. Tabletten",
             "images": "https://www.apo-health.com/cdn/shop/files/Bild_folgt_apohealth_Gesundheit_aus_der_Apotheke_0f0eb96c-a780-4831-b025-2ced5656decf.jpg?v=1724496800",
         }
 
@@ -46,10 +43,10 @@ class TestProduct(unittest.TestCase):
 
     # check available product
     def test_available_product_v1(self):
-        url = "https://www.apo-health.com/collections/all/products/hydrocortison-ratiopharm-05-creme-15-g-creme"
+        url = "https://www.apo-health.com/collections/schmerzmittel-zur-anwendung-auf-der-haut/products/voltaren-schmerzgel-100-g-gel"
         body = None
         with open(
-            "apo_health_test/pages/hydrocortison-ratiopharm-05-creme-15-g-creme.html",
+            "apo_health_test/pages/voltaren-schmerzgel-100-g-gel.html",
             "rb",
         ) as file:
             body = file.read()

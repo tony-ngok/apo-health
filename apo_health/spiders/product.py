@@ -1,103 +1,146 @@
-from datetime import datetime
 import json
 import re
-import os
-import scrapy
-from scrapy.selector import Selector
-from apo_health.items import ProductItem
-from apo_health.product_manager.formatter import ProductParser
+from datetime import datetime
+
 from bs4 import BeautifulSoup
+import scrapy
+from scrapy.http import HtmlResponse
 
 
-from urllib.parse import urlparse, urlunparse
-from apo_health.util import Util
-
-
-from resources.base_spider import BaseSpider
-
-
-class ProductSpider(BaseSpider):
+class ProductSpider(scrapy.Spider):
     name = "product"
-    # allowed_domains = ["apo-health.com"]
+    allowed_domains = ["apo-health.com"]
     start_urls = []
-    EURO_to_US_DOLLAR_EXCHANGE_RATE = 1.12
 
-    custom_settings = {
-        "ITEM_PIPELINES": {
-            "apo_health.pipelines.ProductPipeline": 400,
-        }
+    HEADERS = {
+        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+        "accept-encoding": "gzip, deflate, br, zstd",
+        "accept-language": "de-DE,de;q=0.9",
+        "dnt": "1",
+        "priority": "u=0, i",
+        "referer": "https://www.google.de/",
+        "sec-ch-ua": "\"Chromium\";v=\"130\", \"Microsoft Edge\";v=\"130\", \"Not?A_Brand\";v=\"99\"",
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": "\"Windows\"",
+        "sec-fetch-dest": "document",
+        "sec-fetch-mode": "navigate",
+        "sec-fetch-site": "none",
+        "sec-fetch-user": "?1",
+        "upgrade-insecure-requests": "1",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0"
     }
 
+    # custom_settings = {
+    #     "ITEM_PIPELINES": {
+    #         "apo_health.pipelines.ProductPipeline": 400,
+    #     }
+    # }
+
     def __init__(self, *args, **kwargs):
-        super(ProductSpider, self).__init__(*args, **kwargs)
-        self.cookies = {
-            "secure_customer_sig": "",
-            "localization": "US",
-            "_shopify_y": "cc8af215-40b7-499b-a917-66938a581b24",
-            "_orig_referrer": "https%3A%2F%2Fwww.google.com%2F",
-            "_landing_page": "%2Fcollections%2Fabnehmen%2Fproducts%2Falmased-vitalkost-pulver-500-g-pulver",
-            "_gcl_au": "1.1.884320508.1724344627",
-            "cart": "Z2NwLWV1cm9wZS13ZXN0NDowMUo1WEY1V1ZTVjlRVkZWS0UyMFlQUDJYVg%3Fkey%3D7ab7da1917fbcf1d3533405c5e898370",
-            "cart_ts": "1724344628",
-            "cart_sig": "31f2f403515f4e6a75da06c8d541930a",
-            "ly-lang-selected": "en",
-            "_tracking_consent": "%7B%22con%22%3A%7B%22CMP%22%3A%7B%22a%22%3A%221%22%2C%22m%22%3A%221%22%2C%22p%22%3A%221%22%2C%22s%22%3A%22%22%7D%7D%2C%22v%22%3A%222.1%22%2C%22region%22%3A%22USMO%22%2C%22reg%22%3A%22%22%7D",
-            "_cmp_a": "%7B%22purposes%22%3A%7B%22a%22%3Atrue%2C%22p%22%3Atrue%2C%22m%22%3Atrue%2C%22t%22%3Atrue%7D%2C%22display_banner%22%3Afalse%2C%22sale_of_data_region%22%3Afalse%7D",
-            "_gid": "GA1.2.1553015619.1724506327",
-            "_clck": "1jwtj0x%7C2%7Cfol%7C0%7C1695",
-            "et_oip": "no",
-            "receive-cookie-deprecation": "1",
-            "_shopify_sa_p": "",
-            "_pandectes_gdpr": "eyJjb3VudHJ5Ijp7ImNvZGUiOiJVUyIsInN0YXRlIjoiTU8iLCJkZXRlY3RlZCI6MTcyNDUyNzU3NX0sInN0YXR1cyI6ImFsbG93IiwidGltZXN0YW1wIjoxNzI0MzQ1MDEzLCJwcmVmZXJlbmNlcyI6MCwiaWQiOiI2NmM3NmFiNTkyNjZjMjc3YmY1MDExM2YifQ==",
-            "_shopify_s": "d13bb88b-b4e3-4261-baef-14477a43d620",
-            "_shopify_sa_t": "2024-08-24T19%3A51%3A58.427Z",
-            "_gat": "1",
-            "_ga_V5G1FF7JMC": "GS1.1.1724527574.6.1.1724529119.59.0.0",
-            "_uetsid": "41785160621d11ef85c0afeecfc579e7",
-            "_uetvid": "c59533d060a411ef9123cdbb47128eb9",
-            "keep_alive": "57184b5e-2b03-4179-9e7a-5d47ae3484db",
-            "_ga": "GA1.2.1476992882.1724344628",
-            "_gat_gtag_UA_185803994_1": "1",
-            "_clsk": "964chl%7C1724529119830%7C13%7C1%7Cl.clarity.ms%2Fcollect",
-        }
+        super().__init__(*args, **kwargs)
+
+        # https://open.er-api.com/v6/latest/EUR
+        self.eur_rate = 1.084795
 
     def start_requests(self):
-        print(len(ProductSpider.start_urls))
-        for url in ProductSpider.start_urls:
-            if not url.endswith("html"):
-                url = url.strip() + ".html"
-            yield scrapy.Request(
-                url,
-                headers=self.get_headers(),
-                cookies=self.cookies,
-            )
-
-    def get_headers(self):
-        headers = {
-            "Accept": "application/json, text/javascript, */*; q=0.01",
-            "Accept-Language": "en-US,en;q=0.9,zh-CN;q=0.8,zh;q=0.7",
-            "Cache-Control": "no-cache",
-            "Connection": "keep-alive",
-            "Pragma": "no-cache",
-            "Sec-Fetch-Dest": "empty",
-            "Sec-Fetch-Mode": "cors",
-            "Sec-Fetch-Site": "same-origin",
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-            "X-Requested-With": "XMLHttpRequest",
-            "sec-ch-ua": '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
-            "sec-ch-ua-mobile": "?0",
-            "sec-ch-ua-platform": '"Linux"',
-        }
-
-        return headers
+        for i, url in enumerate(self.start_urls):
+            yield scrapy.Request(url, headers=self.HEADERS,
+                                 meta={ "cookiejar": i },
+                                 callback=self.parse,
+                                 errback=self.errback)
 
     def errback(self, failure):
         self.logger.error(f"{failure.request.url}: {repr(failure)}")
 
-    def parse(self, response):
-        self.logger.info(f"{response.url}: {response.status}")
-        if response.status >= 300:
-            return None
+    def get_prod_data(self, response: HtmlResponse):
+        scr_text = response.css('script[data-section-type="static-product"]::text').get()
+        if scr_text:
+            return json.loads(scr_text).get('product')
 
-        parser = ProductParser()
-        yield parser.parse(response)
+    def get_exist(self, response: HtmlResponse):
+        return 'http://schema.org/InStock' in response.text
+
+    def format_descr(self, raw_descr: str):
+        descr = ""
+
+        soup = BeautifulSoup(raw_descr, 'html.parser')
+        for h3, li in zip(["Übersicht", "Details", "Inhalt"], soup.select('ul.tabs-content > li')):
+            li_cont = ""
+            for c in li.children:
+                if c.name and (c.get_text(strip=True) or (c.name == 'br')): # 保留所有非空或换行符标签
+                    li_cont += str(c).replace('/>', '>')
+                elif isinstance(c, str): # 文字内容
+                    li_cont += c
+
+            li_cont = " ".join(li_cont.strip().split())
+            if li_cont:
+                descr += f"<h3>{h3}</h3><div>{li_cont}</div>"
+
+        return f'<div class="apohealth-descr">{descr}</div>' if descr else None
+
+    def get_category(self, response: HtmlResponse):
+        breadcrumb = response.css('nav.breadcrumbs-container > a::text').getall()
+        if len(breadcrumb) >= 2:
+            return breadcrumb[1].strip()
+
+    def get_images(self, img_list: list[str]):
+        return ";".join(['https:'+img for img in img_list if 'Bild_folgt' not in img])
+
+    def parse(self, response: HtmlResponse):
+        data = self.get_prod_data(response)
+        if not data:
+            print("Keine Produktdaten")
+            return
+
+        images = self.get_images(data.get('images', []))
+        if not images:
+            print("Keine Bilder")
+            return
+
+        product_id = str(data["id"])
+        existence = self.get_exist(response)
+        categories = self.get_category(response)
+
+        raw_descr = data.get("description") or ""
+        description = self.format_descr(raw_descr)
+
+        unique_var = data.get("variants", [{}])[0]
+        sku = unique_var.get("sku", product_id)
+        upc = unique_var.get("barcode") or None
+        weight = round(unique_var["weight"]/453.59237, 2) if isinstance(unique_var.get("weight"), (int, float)) else None
+
+        yield {
+            "date": datetime.now().strftime('%Y-%m-%dT%H:%M:%S'),
+            "url": response.url,
+            "source": "apohealth",
+            "product_id": product_id,
+            "existence": existence,
+            "title": data["title"],
+            "title_en": None,
+            "description": description,
+            "description_en": None,
+            "summary": None,
+            "sku": sku,
+            "upc": upc,
+            "brand": data.get("vendor") or None,
+            "specifications": None,
+            "categories": categories,
+            "images": images,
+            "videos": None,
+            "price": round(data["price"]*self.eur_rate/100.0, 2),
+            "available_qty": None if existence else 0,
+            "options": None,
+            "variants": None,
+            "has_only_default_variant": True,
+            "returnable": False,
+            "reviews": None,
+            "rating": None,
+            "sold_count": None,
+            "shipping_fee": 0.00, # 网页上缺少邮费信息
+            "shipping_days_min": 1, # https://www.apo-health.com/pages/faq
+            "shipping_days_max": 2,
+            "weight": weight,
+            "length": None,
+            "width": None,
+            "height": None,
+        }
