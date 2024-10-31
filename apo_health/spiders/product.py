@@ -84,7 +84,7 @@ class ProductSpider(scrapy.Spider):
             return breadcrumb[1].strip()
 
     def get_images(self, img_list: list[str]):
-        return ";".join(['https:'+img for img in img_list if 'Bild_folgt' not in img])
+        return ";".join(['https:'+img.split('?')[0] for img in img_list if 'Bild_folgt' not in img])
 
     def parse(self, response: HtmlResponse):
         data = self.get_prod_data(response)
