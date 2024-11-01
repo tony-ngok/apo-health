@@ -112,6 +112,11 @@ class ProductSpider(scrapy.Spider):
 
         return f'<div class="apohealth-descr">{descr}</div>' if descr else None
 
+    def get_brand(self, data: dict):
+        brand = data.get("vendor")
+        if brand and (brand != 'Nicht vorhanden'):
+            return brand
+
     def get_category(self, response: HtmlResponse):
         breadcrumb = response.css('nav.breadcrumbs-container > a::text').getall()
         if len(breadcrumb) >= 2:
@@ -163,7 +168,7 @@ class ProductSpider(scrapy.Spider):
             "summary": None,
             "sku": sku,
             "upc": upc,
-            "brand": data.get("vendor") or None,
+            "brand": self.get_brand(data),
             "specifications": None,
             "categories": categories,
             "images": images,
