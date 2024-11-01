@@ -82,7 +82,8 @@ class ProductUrlSpider(scrapy.Spider):
             headers = { **self.HEADERS, 'referer': response.url }
 
             yield scrapy.Request(next_url, headers=headers,
-            meta={ "cookiejar": i }, callback=self.parse, errback=self.errback)
+            meta={ "cookiejar": i }, callback=self.parse, cb_kwargs={ "seite": seite+1 },
+            errback=self.errback)
 
     def write_url(self, kat: str, name: str):
         mod = 'a' if self.retry else 'w'
