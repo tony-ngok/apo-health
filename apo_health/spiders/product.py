@@ -96,7 +96,13 @@ class ProductSpider(scrapy.Spider):
             li_cont = ""
             for c in li.children:
                 if c.name and (c.get_text(strip=True) or (c.name == 'br')): # 保留所有非空或换行符标签
-                    li_cont += str(c).replace('/>', '>')
+                    cont = str(c).replace('/>', '>')
+                    if h3 == 'Details': # 净化细节
+                        conts = [cc for cc in cont.split('<br><br>')
+                                 if not ('zuletzt überarbeitet' in cc) or (('Quelle: ' in cc) and ('Stand: ' in cc))]
+                        cont = "<br><br>".join(conts)
+
+                    li_cont += cont
                 elif isinstance(c, str): # 文字内容
                     li_cont += c
 
