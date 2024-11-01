@@ -37,7 +37,8 @@ class ProductUrlSpider(scrapy.Spider):
     def __init__(self, retry: bool = False, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.errs = 0
-        self.urls = {} # 品名：分类
+        self.pnamen = set() # 去重
+        self.retry = retry
 
         if not retry:
             kats_datei = "Kategorien.txt"
@@ -70,9 +71,22 @@ class ProductUrlSpider(scrapy.Spider):
         links = response.css('h2.productitem--title > a::attr(href)').getall()
         for l in links:
             pname = l.split('/')[-1]
-            if pname not in self.urls:
-                self.urls[pname] = kat
+            if pname not in self.pnamen:
+                self.pnamen.add(pname)
+                self.write_url(kat, pname)
             
         weiter = response.css('li.pagination--next > a')
         if weiter:
+            base_url = response.url.split('?')[0]
+            next_url = base_url+f'?page={seite+1}'
+            headers = { **self.HEADERS, 'referer': response.url }
 
+            yield scrapy.Request(next_url, headers=headers,
+            meta={ "cookiejar": i }, callback=self.parse, errback=self.errback)
+
+    def write_url(self, kat: str, name: str):
+        mod = 'a' if self.retry else 'w'
+        with open(self.urls_ausgabe, mod, encoding='utf-8') as f_aus:
+            f_aus.write(f'{kat} {name}\n')
+        if not self.retry:
+            self.retry = True

@@ -93,7 +93,7 @@ COOKIES_DEBUG = True
 # HTTPCACHE_IGNORE_HTTP_CODES = []
 # HTTPCACHE_STORAGE = "scrapy.extensions.httpcache.FilesystemCacheStorage"
 
-HTTPERROR_ALLOWED_CODES = [404, 400, 403]
+HTTPERROR_ALLOWED_CODES = [400, 401, 403, 404, 429, 500, 503]
 
 # Set settings whose default value is deprecated to a future-proof value
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"

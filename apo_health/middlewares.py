@@ -144,19 +144,20 @@ class ProductUrlSpiderErrsMiddleware: # TODO
         return s
 
     def __init__(self):
-        self.err = 0
+        self.errs = 0
 
     def spider_opened(self, spider):
         spider.logger.info("Spider opened: %s" % spider.name)
 
     def process_exception(self, request, exception, spider):
-        self.err = 1
+        self.errs += 1
 
     def process_response(self, request, response: Response, spider):
         if response.status >= 400:
             spider.logger.error(f'Error {response.status}')
+            self.errs += 1
             return
         return response
 
     def spider_closed(self, spider):
-        sys.exit(self.err)
+        sys.exit(self.errs+spider.errs)
