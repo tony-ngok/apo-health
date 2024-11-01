@@ -69,6 +69,7 @@ class ProductUrlSpider(scrapy.Spider):
         kat = response.url.split('/')[-1]
 
         links = response.css('h2.productitem--title > a::attr(href)').getall()
+        print(links)
         for l in links:
             pname = l.split('/')[-1]
             if pname not in self.pnamen:
