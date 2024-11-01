@@ -184,7 +184,7 @@ class ProductSpider(scrapy.Spider):
     def write_prod(self, item: dict):
         mod = 'a' if self.retry else 'w'
         with open(self.prods_ausgabe, mod, encoding='utf-8') as f_aus:
-            json.dump(item, f_aus)
+            json.dump(item, f_aus, ensure_ascii=False)
             f_aus.write("\n")
         if not self.retry:
             self.retry = True
