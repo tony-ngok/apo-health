@@ -37,7 +37,7 @@ class ProductUrlSpider(scrapy.Spider):
     def __init__(self, retry: bool = False, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.errs = 0
-        self.handels = {}
+        self.urls = {} # 品名：分类
 
         if not retry:
             kats_datei = "Kategorien.txt"
@@ -56,14 +56,23 @@ class ProductUrlSpider(scrapy.Spider):
             yield scrapy.Request(url, headers=headers,
                                  meta={ "cookiejar": i },
                                  callback=self.parse,
-                                 cb_kwargs={ "i": i+1 },
                                  errback=self.errback)
 
     def errback(self, failure):
         self.logger.error(repr(failure))
         self.errs += 1
 
-    def parse(self, response: HtmlResponse, i: int):
-        print(f"{i:_}/{len(self.start_urls):_}".replace("_", "."), response.url)
-        
-        
+    def parse(self, response: HtmlResponse, seite: int = 1):
+        i = response.meta['cookiejar']
+        print(f"{(i+1):_}/{len(self.start_urls):_}".replace("_", "."), response.url)
+        kat = response.url.split('/')[-1]
+
+        links = response.css('h2.productitem--title > a::attr(href)').getall()
+        for l in links:
+            pname = l.split('/')[-1]
+            if pname not in self.urls:
+                self.urls[pname] = kat
+            
+        weiter = response.css('li.pagination--next > a')
+        if weiter:
+
