@@ -106,7 +106,7 @@ class WemakepriceDownloaderMiddleware:
         spider.logger.info("Spider opened: %s" % spider.name)
 
 
-class CategorySpiderErrsMiddleware: # TODO
+class CategorySpiderErrsMiddleware:
     @classmethod
     def from_crawler(cls, crawler):
         # This method is used by Scrapy to create your spiders.
@@ -134,7 +134,7 @@ class CategorySpiderErrsMiddleware: # TODO
         sys.exit(self.err)
 
 
-class ProductUrlSpiderErrsMiddleware: # TODO
+class ProductUrlSpiderErrsMiddleware:
     @classmethod
     def from_crawler(cls, crawler):
         # This method is used by Scrapy to create your spiders.
@@ -154,6 +154,37 @@ class ProductUrlSpiderErrsMiddleware: # TODO
 
     def process_response(self, request, response: Response, spider):
         if response.status >= 400:
+            spider.logger.error(f'Error {response.status}')
+            self.errs += 1
+            return
+        return response
+
+    def spider_closed(self, spider):
+        sys.exit(self.errs+spider.errs)
+
+
+class ProductSpiderErrsMiddleware:
+    @classmethod
+    def from_crawler(cls, crawler):
+        # This method is used by Scrapy to create your spiders.
+        s = cls()
+        crawler.signals.connect(s.spider_opened, signal=signals.spider_opened)
+        crawler.signals.connect(s.spider_closed, signal=signals.spider_closed)
+        return s
+
+    def __init__(self):
+        self.errs = 0
+
+    def spider_opened(self, spider):
+        spider.logger.info("Spider opened: %s" % spider.name)
+
+    def process_exception(self, request, exception, spider):
+        self.errs += 1
+
+    def process_response(self, request, response: Response, spider):
+        if response.status == 404:
+            return
+        elif response.status >= 400:
             spider.logger.error(f'Error {response.status}')
             self.errs += 1
             return

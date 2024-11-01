@@ -78,6 +78,7 @@ class ProductSpider(scrapy.Spider):
 
     def errback(self, failure):
         self.logger.error(f"{failure.request.url}: {repr(failure)}")
+        self.errs += 1
 
     def get_prod_data(self, response: HtmlResponse):
         scr_text = response.css('script[data-section-type="static-product"]::text').get()
@@ -114,6 +115,13 @@ class ProductSpider(scrapy.Spider):
         return ";".join(['https:'+img.split('?')[0] for img in img_list if 'Bild_folgt' not in img])
 
     def parse(self, response: HtmlResponse):
+        i = response.meta["cookiejar"]
+        print(f"{(i+1):_}/{len(self.start_urls):_}".replace("_", "."), response.url)
+
+        if response.status == 404:
+            print(f"{(i+1):_}/{len(self.start_urls):_}".replace("_", "."), "Produkt nicht gefunden")
+            return
+
         data = self.get_prod_data(response)
         if not data:
             print("Keine Produktdaten")
