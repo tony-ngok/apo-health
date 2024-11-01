@@ -65,7 +65,8 @@ class ProductUrlSpider(scrapy.Spider):
     def parse(self, response: HtmlResponse, seite: int = 1):
         i = response.meta['cookiejar']
         print(f"{(i+1):_}/{len(self.start_urls):_}".replace("_", "."), response.url)
-        kat = response.url.split('/')[-1]
+        base_url = response.url.split('?')[0]
+        kat = base_url.split('/')[-1]
 
         links = response.css('h2.productitem--title > a::attr(href)').getall()
         for l in links:
@@ -76,7 +77,6 @@ class ProductUrlSpider(scrapy.Spider):
             
         weiter = response.css('li.pagination--next > a')
         if weiter:
-            base_url = response.url.split('?')[0]
             next_url = base_url+f'?page={seite+1}'
             headers = { **self.HEADERS, 'referer': response.url }
 

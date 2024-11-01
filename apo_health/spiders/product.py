@@ -1,4 +1,5 @@
 import json
+import os
 from datetime import datetime
 
 import requests
@@ -11,10 +12,10 @@ class ProductSpider(scrapy.Spider):
     name = "product"
     allowed_domains = ["apo-health.com"]
     start_urls = []
+    prods_ausgabe = "Produkte.txt"
 
     HEADERS = {
         "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-        "accept-encoding": "gzip, deflate, br, zstd",
         "accept-language": "de-DE,de;q=0.9",
         "dnt": "1",
         "priority": "u=0, i",
@@ -36,11 +37,25 @@ class ProductSpider(scrapy.Spider):
     #     }
     # }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, retry: bool = False, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.retry = retry
+        self.errs = 0
+
+        if not retry:
+            urls_datei = "Produkt-URLs.txt"
+            if os.path.exists(urls_datei):
+                with open(urls_datei, 'r', encoding='utf-8') as f_urls:
+                    for line in f_urls:
+                        if line.strip():
+                            self.start_urls.append(line.strip())
+            else:
+                print("Datei fehlt:", urls_datei)
 
         # https://open.er-api.com/v6/latest/EUR
         self.eur_rate = 1.084795
+
+        # 获取实时汇率（测试中不用）
         try:
             exch = requests.get('https://open.er-api.com/v6/latest/EUR')
             if exch.ok:
@@ -53,7 +68,9 @@ class ProductSpider(scrapy.Spider):
             print(f"EUR/USD: {self.eur_rate}".replace(".", ","))
 
     def start_requests(self):
-        for i, url in enumerate(self.start_urls):
+        for i, todo in enumerate(self.start_urls):
+            kat, pname = todo.split()
+            url = f'https://www.apo-health.com/collections/{kat}/products/{pname}'
             yield scrapy.Request(url, headers=self.HEADERS,
                                  meta={ "cookiejar": i },
                                  callback=self.parse,
