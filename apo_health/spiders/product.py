@@ -179,6 +179,7 @@ class ProductSpider(scrapy.Spider):
             "width": None,
             "height": None,
         }
+        self.write_prod(item)
 
     def write_prod(self, item: dict):
         mod = 'a' if self.retry else 'w'
