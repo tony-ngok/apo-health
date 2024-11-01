@@ -66,10 +66,8 @@ class ProductUrlSpider(scrapy.Spider):
         i = response.meta['cookiejar']
         print(f"{(i+1):_}/{len(self.start_urls):_}".replace("_", "."), response.url)
         kat = response.url.split('/')[-1]
-        print(response.text)
 
         links = response.css('h2.productitem--title > a::attr(href)').getall()
-        print(links)
         for l in links:
             pname = l.split('/')[-1]
             if pname not in self.pnamen:
