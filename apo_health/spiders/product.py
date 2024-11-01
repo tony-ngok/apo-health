@@ -144,7 +144,7 @@ class ProductSpider(scrapy.Spider):
         upc = unique_var.get("barcode") or None
         weight = round(unique_var["weight"]/453.59237, 2) if isinstance(unique_var.get("weight"), (int, float)) else None
 
-        yield {
+        item = {
             "date": datetime.now().strftime('%Y-%m-%dT%H:%M:%S'),
             "url": response.url,
             "source": "apohealth",
@@ -179,3 +179,11 @@ class ProductSpider(scrapy.Spider):
             "width": None,
             "height": None,
         }
+
+    def write_prod(self, item: dict):
+        mod = 'a' if self.retry else 'w'
+        with open(self.prods_ausgabe, mod, encoding='utf-8') as f_aus:
+            json.dump(item, f_aus)
+            f_aus.write("\n")
+        if not self.retry:
+            self.retry = True

@@ -93,7 +93,13 @@ COOKIES_DEBUG = True
 # HTTPCACHE_IGNORE_HTTP_CODES = []
 # HTTPCACHE_STORAGE = "scrapy.extensions.httpcache.FilesystemCacheStorage"
 
-HTTPERROR_ALLOWED_CODES = [400, 401, 403, 404, 429, 500, 503]
+HTTPERROR_ALLOWED_CODES = [400, 404]
+
+# https://docs.scrapy.org/en/2.11/topics/downloader-middleware.html?highlight=retry
+RETRY_HTTP_CODES = [401, 403, 408, 429, 500, 502, 503, 504, 522, 524]
+RETRY_TIMES = 10000
+
+# DOWNLOAD_DELAY = 0.1
 
 # Set settings whose default value is deprecated to a future-proof value
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
@@ -119,6 +125,3 @@ LOG_LEVEL = "INFO"
 # WEBSHARE_USER = settings.WEBSHARE_USER
 # WEBSHARE_PASSWORD = settings.WEBSHARE_PASSWORD
 # WEBSHARE_COUNTRY = settings.WEBSHARE_COUNTRY
-
-# DOWNLOAD_DELAY = 0.1
-RETRY_TIMES = 10000
