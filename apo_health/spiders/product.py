@@ -99,7 +99,7 @@ class ProductSpider(scrapy.Spider):
                     cont = str(c).replace('/>', '>')
                     if h3 == 'Details': # 净化细节
                         conts = [cc for cc in cont.split('<br><br>')
-                                 if not ('zuletzt überarbeitet' in cc) or (('Quelle: ' in cc) and ('Stand: ' in cc))]
+                                 if not (('zuletzt überarbeitet' in cc) or (('Quelle: ' in cc) and ('Stand: ' in cc)))]
                         cont = "<br><br>".join(conts)
 
                     li_cont += cont
