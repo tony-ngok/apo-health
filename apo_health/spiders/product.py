@@ -12,7 +12,7 @@ class ProductSpider(scrapy.Spider):
     name = "product"
     allowed_domains = ["apo-health.com"]
     start_urls = []
-    prods_ausgabe = "Produkte.txt"
+    # prods_ausgabe = "Produkte.txt"
 
     HEADERS = {
         "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
@@ -31,11 +31,11 @@ class ProductSpider(scrapy.Spider):
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0"
     }
 
-    # custom_settings = {
-    #     "ITEM_PIPELINES": {
-    #         "apo_health.pipelines.ProductPipeline": 400,
-    #     }
-    # }
+    custom_settings = {
+        "ITEM_PIPELINES": {
+            "apo_health.pipelines.MongoPipeLine": 400,
+        }
+    }
 
     def __init__(self, retry: bool = False, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -190,12 +190,13 @@ class ProductSpider(scrapy.Spider):
             "width": None,
             "height": None,
         }
-        self.write_prod(item)
+        # self.write_prod(item)
+        yield item
 
-    def write_prod(self, item: dict):
-        mod = 'a' if self.retry else 'w'
-        with open(self.prods_ausgabe, mod, encoding='utf-8') as f_aus:
-            json.dump(item, f_aus, ensure_ascii=False)
-            f_aus.write("\n")
-        if not self.retry:
-            self.retry = True
+    # def write_prod(self, item: dict):
+    #     mod = 'a' if self.retry else 'w'
+    #     with open(self.prods_ausgabe, mod, encoding='utf-8') as f_aus:
+    #         json.dump(item, f_aus, ensure_ascii=False)
+    #         f_aus.write("\n")
+    #     if not self.retry:
+    #         self.retry = True

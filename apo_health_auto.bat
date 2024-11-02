@@ -4,6 +4,7 @@
 cd /d "%~dp0"
 pip install -U scrapy
 pip install -U bs4
+pip install -U pymongo
 git pull
 
 scrapy crawl category

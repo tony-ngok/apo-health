@@ -3,7 +3,7 @@ import os
 import time
 from datetime import datetime, timedelta
 
-from bson.objectid import ObjectId
+# from bson.objectid import ObjectId
 from pymongo import MongoClient, UpdateOne
 from pymongo.errors import BulkWriteError, ConnectionFailure, NetworkTimeout
 
@@ -15,7 +15,7 @@ class ApohealthMongoDb:
     def __init__(self, batch_size: int = 1000):
         self.start = time.time()
         self.ops = [] # 存放批量操作数据
-        self.sess_id = str(ObjectId()) # 当前存放的数据ID
+        # self.sess_id = str(ObjectId()) # 当前存放的数据ID
         self.batch_size = batch_size
 
     def connect(self) -> bool:
