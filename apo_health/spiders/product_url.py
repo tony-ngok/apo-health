@@ -27,12 +27,6 @@ class ProductUrlSpider(scrapy.Spider):
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 Edg/130.0.0.0"
     }
 
-    # custom_settings = {
-    #     "DOWNLOADER_MIDDLEWARES": { # 每发送请求后，先经过中间件返回回答，然后将回答通过回调函数处理
-    #         'apo_health.middlewares.SsgCatsErrsMiddleware': 543
-    #     }
-    # }
-
     def __init__(self, retry: bool = False, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.errs = 0
