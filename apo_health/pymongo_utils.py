@@ -44,13 +44,13 @@ def bulk_write(ops: list[UpdateOne], coll: Collection, max_tries: int) -> bool:
     return False
 
 
-def ausverkaufte(coll: Collection, max_tries: int) -> bool:
+def ausverkaufte(coll: Collection, max_tries: int, d: int = 7) -> bool:
     """
     太久没更新的商品不删掉，标注为断货
     """
 
     jetzt = datetime.now()
-    letzte_woche = (jetzt-timedelta(days=7)).strftime('%Y-%m-%dT%H:%M:%S')
+    letzte_woche = (jetzt-timedelta(days=d)).strftime('%Y-%m-%dT%H:%M:%S')
 
     for i in range(1, max_tries+1):
         try:

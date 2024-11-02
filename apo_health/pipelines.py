@@ -69,7 +69,7 @@ from apo_health.pymongo_utils import ausverkaufte, bulk_write, get_uos
 class MongoPipeLine:
     file_root = "Produkte{}.txt" # 临时存取抓到的批量数据
     
-    def __init__(self, uri: str, batch_size: int, max_tries: int):
+    def __init__(self, uri: str, batch_size: int, max_tries: int, days_bef: int):
         self.records = 0 # 抓取到的数据量
         self.batch_no = 0
         self.uri = uri
@@ -77,13 +77,15 @@ class MongoPipeLine:
         self.max_tries = max_tries
         self.errs = 0 # 记录数据库处理错误个数
         self.switch = False # 开始批量处理前关闭，写入数据库后打开
+        self.days_bef = days_bef
 
     @classmethod
     def from_crawler(cls, crawler: Crawler):
         spider = cls(
             uri=crawler.settings.get("MONGO_URI"),
             batch_size=crawler.settings.getint("MONGO_BATCH_SIZE", 1000),
-            max_tries=crawler.settings.getint("MONGO_MAX_TRIES", 10)
+            max_tries=crawler.settings.getint("MONGO_MAX_TRIES", 10),
+            days_bef = crawler.settings.getint("DAYS_BEF", 7)
         )
         return spider
 
@@ -142,7 +144,7 @@ class MongoPipeLine:
                 print("bulk_write Fehler")
                 self.errs += 1
 
-        if not ausverkaufte(self.coll, self.max_tries):
+        if not ausverkaufte(self.coll, self.max_tries, self.days_bef):
             print("Fehler bei den Ausverkauften")
             self.errs += 1
 
