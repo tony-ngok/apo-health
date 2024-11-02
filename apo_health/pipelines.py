@@ -7,6 +7,7 @@
 # useful for handling different item types with a single interface
 
 import json
+import os
 import sys
 import time
 
@@ -124,6 +125,7 @@ class MongoPipeLine:
             uos = get_uos(batchdatei)
             if bulk_write(uos, self.coll, self.max_tries):
                 print("Stufe", self.batch_no, "erfolgreich")
+                os.remove(batchdatei)
             else:
                 print("bulk_write Fehler")
                 self.errs += 1
