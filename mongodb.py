@@ -1,13 +1,14 @@
 import json
 import os
 import time
+from datetime import datetime, timedelta
 
 from bson.objectid import ObjectId
 from pymongo import MongoClient, UpdateOne
 from pymongo.errors import ConnectionFailure, NetworkTimeout, OperationFailure
 
 class ApohealthMongoDb:
-    schluessel = "mongodb://mongouser:XSzY1nHbxi@34.172.204.102:27017/apo_health"
+    schluessel = "mongodb://mongouser:XSzY1nHbxi@34.172.204.102:27017"
     quelle = "Produkte.txt"
     MAX_VERSUCHE = 10 # 最大可尝试次数
 
@@ -19,7 +20,7 @@ class ApohealthMongoDb:
         for i in range(1, self.MAX_VERSUCHE+1):
             try:
                 db = MongoClient(self.schluessel, serverSelectionTimeoutMS=60000)
-                self.coll = db["produkte"]
+                self.coll = db["apo_health"]["produkte"]
                 print("Apohealth-Datenbank verbunden")
                 return True
             except (ConnectionFailure, NetworkTimeout) as c_err:
@@ -40,7 +41,8 @@ class ApohealthMongoDb:
     def bulk_write(self) -> bool:
         for i in range(1, self.MAX_VERSUCHE+1):
             try:
-                self.coll.bulk_write(self.ops)
+                bw = self.coll.bulk_write(self.ops)
+                print(bw)
             except OperationFailure as op_f:
                 print(f"({i}/{self.MAX_VERSUCHE})", "Fehler beim Aktualisieren", str(op_f))
                 time.sleep(2)
@@ -48,16 +50,37 @@ class ApohealthMongoDb:
 
     def aktualisieren(self):
         if os.path.exists(self.quelle):
+            switch = True # 操作完成
             with open(self.quelle, 'r', encoding='utf-8') as f:
-                beenden = False # 操作完成
-                for line in enumerate(f):
+                for i, line in enumerate(f):
+                    if not (switch or self.ops):
+                        switch = True
+
                     if line.strip():
                         dat = json.loads(line.strip())
                         self.ops.append(self.gen_uo(dat))
                     
                     if len(self.ops) >= 1000:
-                        self.bulk_write()
-                    
+                        if self.bulk_write():
+                            switch = False
+                            self.ops.clear()
+
+            if switch:
+                if not self.bulk_write():
+                    print("bulk_write Fehler")
+
+            jetzt = datetime.now()
+            letzte_woche = (jetzt-timedelta(days=7)).strftime('%Y-%m-%dT%H:%M:%S')
+            self.coll.update_many(
+                { "date": { "$lt": letzte_woche } },
+                { "$set": {
+                    "date": jetzt.strftime('%Y-%m-%dT%H:%M:%S'),
+                    "existence": False,
+                    "available_qty": 0
+                }
+                }
+            )
+
         else:
             print("Keine Daten")
 
