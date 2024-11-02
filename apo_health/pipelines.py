@@ -83,7 +83,7 @@ class MongoPipeLine:
         spider = cls(
             uri=crawler.settings.get("MONGO_URI"),
             batch_size=crawler.settings.getint("MONGO_BATCH_SIZE", 1000),
-            max_retries=crawler.settings.getint("MONGO_MAX_RETRIES", 10)
+            max_tries=crawler.settings.getint("MONGO_MAX_TRIES", 10)
         )
         return spider
 
