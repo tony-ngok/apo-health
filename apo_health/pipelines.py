@@ -135,10 +135,10 @@ class MongoPipeLine:
 
     def close_spider(self, spider: Spider):
         if not self.switch:
+            batchdatei = self.file_root.format(self.batch_no)
             self.batch_no += 1
             print("Stufe", self.batch_no)
 
-            batchdatei = self.file_root.format(self.batch_no)
             uos = get_uos(batchdatei)
             if bulk_write(uos, self.coll, self.max_tries):
                 spider.logger.info(f"Batch {self.batch_no} done")
