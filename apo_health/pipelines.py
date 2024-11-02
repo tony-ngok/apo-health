@@ -24,7 +24,7 @@ from pymongo.errors import ConnectionFailure, NetworkTimeout
 from scrapy import Spider
 from scrapy.crawler import Crawler
 
-from pymongo_utils import ausverkaufte, bulk_write, get_uos
+from apo_health.pymongo_utils import ausverkaufte, bulk_write, get_uos
 
 
 # class CategoryPipeline(ESCategoryPipeline):
