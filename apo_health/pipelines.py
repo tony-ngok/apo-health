@@ -114,7 +114,7 @@ class MongoPipeLine:
         # 连续写1000条记录到文件
         batchdatei = self.file_root.format(self.batch_no)
         with open(batchdatei, 'a', encoding='utf-8') as f:
-            json.dumps(dat, f, ensure_ascii=False)
+            json.dump(dat, f, ensure_ascii=False)
             f.write("\n")
         
         if self.records % self.batch_size == 0:
