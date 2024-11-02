@@ -141,8 +141,10 @@ class MongoPipeLine:
             batchdatei = self.file_root.format(self.batch_no)
             uos = get_uos(batchdatei)
             if bulk_write(uos, self.coll, self.max_tries):
+                spider.logger.info(f"Batch {self.batch_no} done")
                 print("Stufe", self.batch_no, "erfolgreich")
             else:
+                spider.logger.error(f"Batch {self.batch_no} fail")
                 print("bulk_write Fehler")
                 self.errs += 1
 
