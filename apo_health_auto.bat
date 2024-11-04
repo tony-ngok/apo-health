@@ -7,6 +7,7 @@ pip install -U bs4
 pip install -U pymongo
 git pull
 
+del apo_health.log
 scrapy crawl category
 scrapy crawl product-url
 scrapy crawl product
