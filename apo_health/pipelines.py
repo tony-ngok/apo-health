@@ -124,6 +124,7 @@ class MongoPipeLine:
 
             uos = get_uos(batchdatei)
             if bulk_write(uos, self.coll, self.max_tries):
+                spider.logger.info(f"Batch {self.batch_no} done")
                 print("Stufe", self.batch_no, "erfolgreich")
                 os.remove(batchdatei)
             else:
@@ -154,4 +155,3 @@ class MongoPipeLine:
             self.errs += 1
 
         self.client.close()
-        sys.exit(1 if self.errs else 0)
